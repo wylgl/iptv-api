@@ -18,7 +18,6 @@ nginx_dir = resource_path(os.path.join('utils', 'nginx-rtmp-win32'))
 nginx_path = resource_path(os.path.join(nginx_dir, 'nginx.exe'))
 stop_path = resource_path(os.path.join(nginx_dir, 'stop.bat'))
 hls_temp_path = resource_path(os.path.join(nginx_dir, 'temp/hls')) if sys.platform == "win32" else '/tmp/hls'
-os.makedirs(f"{constants.output_dir}/data", exist_ok=True)
 
 live_running_streams = OrderedDict()
 hls_running_streams = OrderedDict()
@@ -178,8 +177,8 @@ def show_epg_gz():
 
 @app.route("/log")
 def show_log():
-    if os.path.exists(constants.sort_log_path):
-        with open(constants.sort_log_path, "r", encoding="utf-8") as file:
+    if os.path.exists(constants.result_log_path):
+        with open(constants.result_log_path, "r", encoding="utf-8") as file:
             content = file.read()
     else:
         content = constants.waiting_tip
@@ -347,19 +346,12 @@ def run_service():
                 finally:
                     os.chdir(original_dir)
             ip_address = get_ip_address()
-            print(f"📄 Result content: {ip_address}/content")
-            print(f"📄 Log content: {ip_address}/log")
-            if config.open_m3u_result:
-                print(f"🚀 M3u api: {ip_address}/m3u")
-            print(f"🚀 Txt api: {ip_address}/txt")
+            print(f"📄 Speed test log: {ip_address}/log")
             if config.open_rtmp:
-                if config.open_m3u_result:
-                    print(f"🚀 Rtmp live M3u api: {ip_address}/live/m3u")
-                    print(f"🚀 Rtmp hls M3u api: {ip_address}/hls/m3u")
-                print(f"🚀 Rtmp live Txt api: {ip_address}/live/txt")
-                print(f"🚀 Rtmp hls Txt api: {ip_address}/hls/txt")
-            print(f"🚀 IPv4 Txt api: {ip_address}/ipv4")
-            print(f"🚀 IPv6 Txt api: {ip_address}/ipv6")
+                print(f"🚀 Live api: {ip_address}/live")
+                print(f"🚀 HLS api: {ip_address}/hls")
+            print(f"🚀 IPv4 api: {ip_address}/ipv4")
+            print(f"🚀 IPv6 api: {ip_address}/ipv6")
             print(f"✅ You can use this url to watch IPTV 📺: {ip_address}")
             app.run(host="0.0.0.0", port=config.app_port)
     except Exception as e:
